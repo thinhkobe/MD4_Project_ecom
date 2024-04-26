@@ -1,5 +1,6 @@
 package ra.md4_project.advice;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ra.md4_project.exception.CategoryNotEmpty;
 import ra.md4_project.exception.DataExist;
 import ra.md4_project.exception.DataNotFound;
+import ra.md4_project.exception.RequestError;
 import ra.md4_project.model.dto.response.ResponeError;
+import ra.md4_project.model.dto.respornWapper.ApiError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,16 +33,26 @@ public class ApplicationHandler {
 
     @ExceptionHandler(DataExist.class)
     public ResponseEntity<?> handleDataExist(DataExist e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage()));
     }
 
     @ExceptionHandler(CategoryNotEmpty.class)
-    public ResponseEntity<?> handleDataExist(CategoryNotEmpty e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<?> handleCategoryNotEmpty(CategoryNotEmpty e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ExceptionHandler(RequestError.class)
+    public ResponseEntity<?> RequestError(RequestError e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError(HttpStatus.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(DataNotFound.class)
-    public ResponseEntity<?> handleDataNotFound(DataNotFound e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleDataNotFound(DataNotFound e) {
+        String errorMessage = "Không tìm thấy tài nguyên: " + e.getMessage();
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errorMessage);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 }

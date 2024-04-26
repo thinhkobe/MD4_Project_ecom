@@ -25,7 +25,7 @@ public class EditProductRequest {
     private String description;
 
     @DecimalMin(value = "0.00")
-    private BigDecimal unitPrice;
+    private double unitPrice;
 
     @Min(0)
     private Integer stockQuantity;

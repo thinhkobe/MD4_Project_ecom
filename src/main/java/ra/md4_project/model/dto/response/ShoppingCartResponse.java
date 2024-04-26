@@ -13,5 +13,5 @@ public class ShoppingCartResponse {
   private   String productName;
   private  Integer quantity;
   private  String image;
-  private BigDecimal productPrice;
+  private double productPrice;
 }

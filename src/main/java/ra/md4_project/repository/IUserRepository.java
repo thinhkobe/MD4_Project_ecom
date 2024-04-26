@@ -12,8 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface IUserRepository extends JpaRepository<Users,Long> {
+public interface  IUserRepository extends JpaRepository<Users,Long> {
     Optional<Users> findByUsername(String name);
     List<Users> findAllByUsernameContaining(String userName);
+
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
+
 
 }

@@ -29,8 +29,8 @@ public class Product {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "unit_price", precision = 10, scale = 2)
-    private BigDecimal unitPrice;
+    @Column(name = "unit_price")
+    private double unitPrice;
 
     @Column(name = "stock_quantity", columnDefinition = "INT DEFAULT 0 CHECK (stock_quantity >= 0)")
     private Integer stockQuantity;

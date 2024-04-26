@@ -4,6 +4,8 @@ package ra.md4_project.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -28,8 +30,8 @@ public class Order {
     @JoinColumn(name = "userId")
     private Users user;
 
-    @Column(name = "total_price", precision = 10, scale = 2)
-    private BigDecimal totalPrice;
+    @Column(name = "total_price")
+    private double totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -47,13 +49,13 @@ public class Order {
     @Column(name = "receive_phone", length = 15)
     private String receivePhone;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "received_at")
-    private Date receivedAt;
+    private LocalDateTime receivedAt;
 
 
 
