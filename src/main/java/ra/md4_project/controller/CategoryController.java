@@ -15,18 +15,18 @@ import ra.md4_project.model.dto.respornWapper.RespronWapper;
 import ra.md4_project.service.categoryService.ICategoryService;
 
 @Controller
-@RequestMapping("/md4_project.com/v1/categoris")
+@RequestMapping("/md4_project.com/v1/categories")
 public class CategoryController {
     @Autowired
     private ICategoryService iCategoryService;
 
     @GetMapping()
-    public ResponseEntity<?> getAll(@PageableDefault(page = 0, size = 3, sort = "productName", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<?> getAll(@PageableDefault(page = 0, size = 3, sort = "categoryName", direction = Sort.Direction.ASC) Pageable pageable) {
         return new ResponseEntity<>(new RespronWapper<>(
                 EHttpStatus.SUCCESS,
                 HttpStatus.OK.name(),
                 HttpStatus.OK.value(),
-                iCategoryService.getAll(pageable)
+                iCategoryService.getAll(pageable).getContent()
         ), HttpStatus.OK);
 
     }

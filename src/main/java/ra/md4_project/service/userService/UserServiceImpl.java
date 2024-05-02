@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ra.md4_project.exception.DataExist;
 import ra.md4_project.exception.DataNotFound;
+import ra.md4_project.exception.Locked;
 import ra.md4_project.exception.RequestError;
 import ra.md4_project.model.dto.request.ChangePassWordDOT;
 import ra.md4_project.model.dto.request.FormLogin;
@@ -86,7 +87,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public JWTResponese login(FormLogin formLogin) throws DataNotFound {
+    public JWTResponese login(FormLogin formLogin) throws DataNotFound, Locked {
         //xac thuc thong qua
         Authentication authentication;
         try {
@@ -98,7 +99,7 @@ public class UserServiceImpl implements IUserService {
         }
         UserDetailsCustom userdetail = (UserDetailsCustom) authentication.getPrincipal();
         if (!userdetail.isStatus()) {
-            throw new DataNotFound("user inactive");
+            throw new Locked("user inactive");
         }
         String accessToken = jwtProvider.gennerateAccessToken(userdetail);
         return JWTResponese.builder()
@@ -182,7 +183,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean changePassWord(Long userid, ChangePassWordDOT changePassWordDOT) throws RequestError, DataNotFound {
         Users users = findById(userid);
-        if (!passwordEncoder.matches(changePassWordDOT.getConfirmPassword(), users.getPassword())) {
+        if (!passwordEncoder.matches(changePassWordDOT.getOldPassword(), users.getPassword())) {
             throw new RequestError(" old password is incorrect ");
         }
 

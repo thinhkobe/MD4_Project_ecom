@@ -40,7 +40,7 @@ public class FormRegister {
     private String password;
 
     @UniqueValue(entityClass = Users.class, fieldName = "phone")
-    @NotBlank(message = "address cannot be empty")
+    @NotBlank(message = "phone cannot be empty")
     private String phone;
 
     private Set<String> roleSet;

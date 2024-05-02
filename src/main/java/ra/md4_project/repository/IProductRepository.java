@@ -24,5 +24,7 @@ public interface IProductRepository extends JpaRepository<Product,Long> {
             , nativeQuery = true)
     int countByProductNameIgnoreCaseAndProductIdNot(@Param("productName") String productName, @Param("productId") Long productId);
 
+    boolean existsByProductName(String productName);
+
 
 }

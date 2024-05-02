@@ -42,7 +42,7 @@ public class AdminController {
                 EHttpStatus.SUCCESS,
                 HttpStatus.OK.name(),
                 HttpStatus.OK.value(),
-                iUserService.findAll(pageable)
+                iUserService.findAll(pageable).getContent()
         ), HttpStatus.OK);
 
     }
@@ -93,7 +93,7 @@ public class AdminController {
                 EHttpStatus.SUCCESS,
                 HttpStatus.OK.name(),
                 HttpStatus.OK.value(),
-                iProductService.findAll(pageable)
+                iProductService.findAll(pageable).getContent()
         ), HttpStatus.OK);
     }
 
@@ -138,7 +138,7 @@ public class AdminController {
                 EHttpStatus.SUCCESS,
                 HttpStatus.OK.name(),
                 HttpStatus.OK.value(),
-                iCategoryService.getAll(pageable)
+                iCategoryService.getAll(pageable).getContent()
         ), HttpStatus.OK);
     }
     @GetMapping("/categories/{categoryId}")

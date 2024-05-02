@@ -13,10 +13,7 @@ import ra.md4_project.model.entity.Product;
 import ra.md4_project.repository.ICategoryRepository;
 import ra.md4_project.repository.IProductRepository;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -57,51 +54,60 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Product addProduct(ProductRequest productRequest) throws DataNotFound {
+        // Tạo instance của Product bằng cách sử dụng Builder Pattern
+        Product product = Product.builder()
+                .sku(UUID.randomUUID().toString())
+                .productName(productRequest.getProductName())
+                .description(productRequest.getDescription())
+                .unitPrice(productRequest.getUnitPrice())
+                .stockQuantity(productRequest.getStockQuantity())
+                .image(productRequest.getImage())
+                .status(true)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
 
-        Product product = new Product();
-        product.setSku(UUID.randomUUID().toString());
-        product.setProductName(productRequest.getProductName());
-        product.setDescription(productRequest.getDescription());
-        product.setUnitPrice(productRequest.getUnitPrice());
-        product.setStockQuantity(productRequest.getStockQuantity());
-        product.setImage(productRequest.getImage());
-        product.setStatus(true);
-        product.setCreatedAt(new Date());
-        product.setUpdatedAt(new Date());
-
+        // Kiểm tra và set category nếu có
         if (productRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new DataNotFound("Category not found"));
             product.setCategory(category);
         }
 
+        // Lưu sản phẩm mới và trả về
         return iProductRepository.save(product);
-
     }
 
+
     public Product updateProduct(Long productId, EditProductRequest productRequest) throws DataNotFound, DataExist {
-        Optional<Product> optionalProduct = iProductRepository.findById(productId);
-        if (optionalProduct.isEmpty()) {
-            throw new DataNotFound("Product not found with id: " + productId);
+        // Tìm sản phẩm theo ID
+        Product product = iProductRepository.findById(productId)
+                .orElseThrow(() -> new DataNotFound("Product not found with id: " + productId));
+
+        // Kiểm tra nếu tên mới không trùng với tên hiện tại của sản phẩm
+        if (!Objects.equals(product.getProductName(), productRequest.getProductName())) {
+            // Kiểm tra xem tên mới đã tồn tại chưa
+            if (iProductRepository.existsByProductName(productRequest.getProductName())) {
+                throw new DataExist("Product name already exists");
+            }
+            // Cập nhật tên sản phẩm
+            product.setProductName(productRequest.getProductName());
         }
-        // Kiểm tra tính duy nhất của tên sản phẩm mới
 
+        // Cập nhật thông tin sản phẩm
+        Product updatedProduct = Product.builder()
+                .productId(productId)
+                .sku(product.getSku())
+                .productName(product.getProductName())
+                .description(productRequest.getDescription())
+                .unitPrice(productRequest.getUnitPrice())
+                .stockQuantity(productRequest.getStockQuantity())
+                .image(productRequest.getImage())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(new Date())
+                .build();
 
-        int number = iProductRepository.countByProductNameIgnoreCaseAndProductIdNot(productRequest.getProductName(), productId);
-        if (number > 0) {
-            throw new DataExist("Product name already exists");
-        }
-
-        Product product = optionalProduct.get();
-        // Cập nhật thông tin sản phẩm từ dữ liệu trong ProductRequest
-        product.setProductName(productRequest.getProductName());
-        product.setDescription(productRequest.getDescription());
-        product.setUnitPrice(productRequest.getUnitPrice());
-        product.setStockQuantity(productRequest.getStockQuantity());
-        product.setImage(productRequest.getImage());
-        product.setUpdatedAt(new Date());
-
-        // kiểm tra categoryId có tồn tại hay không
+        // Kiểm tra xem categoryId có tồn tại không
         if (productRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new DataNotFound("Category not found with id: " + productRequest.getCategoryId()));
@@ -109,8 +115,9 @@ public class ProductServiceImpl implements IProductService {
         }
 
         // Lưu sản phẩm đã cập nhật vào cơ sở dữ liệu và trả về
-        return iProductRepository.save(product);
+        return iProductRepository.save(updatedProduct);
     }
+
 
     @Override
     public void deleteProduct(Long productId) throws DataNotFound {
