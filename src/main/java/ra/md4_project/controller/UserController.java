@@ -27,7 +27,7 @@ public class UserController {
     @Autowired
     private IShopPingCartService iShopPingCartService;
     @Autowired
-    private IOrderService iOrderService;
+    private IOrderService orderService;
     @Autowired
     private IUserService userService;
 
@@ -109,12 +109,41 @@ public class UserController {
     }
 
     @PutMapping("/account/change-password")
-    private ResponseEntity<?> changePassword(@Valid @RequestBody ChangePassWordDOT changePassWordDOT, @AuthenticationPrincipal UserDetailsCustom userDetailsCustom) throws DataNotFound, DataExist {
+    private ResponseEntity<?> changePassword(@Valid @RequestBody ChangePassWordDOT changePassWordDOT, @AuthenticationPrincipal UserDetailsCustom userDetailsCustom) throws DataNotFound, DataExist, RequestError {
         return new ResponseEntity<>(new RespronWapper<>(
                 EHttpStatus.SUCCESS,
                 HttpStatus.OK.name(),
                 HttpStatus.OK.value(),
                 userService.changePassWord(userDetailsCustom.getId(),changePassWordDOT)
+        ), HttpStatus.OK);
+    }
+    @GetMapping("/history")
+    private ResponseEntity<?> history( @AuthenticationPrincipal UserDetailsCustom userDetailsCustom) throws DataNotFound, DataExist, RequestError {
+        return new ResponseEntity<>(new RespronWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                orderService.getHistoryList(userDetailsCustom.getId())
+        ), HttpStatus.OK);
+    }
+
+    @GetMapping("/history/serialNumber/{serialNumber}")
+    private ResponseEntity<?> getOrderDetailBySerialNumber(@PathVariable String serialNumber){
+        return new ResponseEntity<>(new RespronWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                orderService.getOrderDetailBySerialNumber(serialNumber)
+        ), HttpStatus.OK);
+    }
+
+ @GetMapping("/history/status/{orderStatus}")
+    private ResponseEntity<?> getOrderDetailByOrderStatus(@PathVariable String orderStatus) throws RequestError {
+        return new ResponseEntity<>(new RespronWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                orderService.getOrderDetailByOrderStatus(orderStatus)
         ), HttpStatus.OK);
     }
 

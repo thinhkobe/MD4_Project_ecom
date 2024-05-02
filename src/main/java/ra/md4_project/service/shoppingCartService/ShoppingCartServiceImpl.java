@@ -17,7 +17,6 @@ import ra.md4_project.repository.IShoppingCartRepository;
 import ra.md4_project.service.productService.IProductService;
 import ra.md4_project.service.userService.IUserService;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class ShoppingCartServiceImpl implements IShopPingCartService {
         Product product = productService.findById(shopPingCartResponse.getProductId());
         shoppingCart.setUser(userService.findById(userId));
         shoppingCart.setProduct(product);
-        if (product.getStockQuantity()<shopPingCartResponse.getQuantity()){
+        if (product.getStockQuantity() < shopPingCartResponse.getQuantity()) {
             throw new RequestError("product don't have enough quantity");
         }
         shoppingCart.setOrderQuantity(shopPingCartResponse.getQuantity());
@@ -128,17 +127,17 @@ public class ShoppingCartServiceImpl implements IShopPingCartService {
         newOrder.setReceiveAddress(orderRequest.getReceiveAddress());
         newOrder.setReceivePhone(orderRequest.getReceivePhone());
         newOrder.setSerialNumber(serialNumber);
-        newOrder.setStatus(OrderStatus.CONFIRM);
+        newOrder.setStatus(OrderStatus.WAITING);
 
         double totalPrice = 0;
         for (ShoppingCart cart : cartList) {
-            totalPrice += cart.getOrderQuantity()*cart.getProduct().getStockQuantity();
+            totalPrice += cart.getOrderQuantity() * cart.getProduct().getStockQuantity();
         }
         newOrder.setTotalPrice(totalPrice);
         Long oderId = orderRepository.save(newOrder).getOrderId();
 
         List<OrderDetail> orderDetailList = new ArrayList<>();
-        List<OrderDetailDTO>orderDetailDTOS=new ArrayList<>();
+        List<OrderDetailDTO> orderDetailDTOS = new ArrayList<>();
         for (ShoppingCart cart : cartList) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setId(new OrderDetailId(oderId, cart.getProduct().getProductId()));
@@ -155,18 +154,16 @@ public class ShoppingCartServiceImpl implements IShopPingCartService {
             shoppingCartRepository.delete(cart);
             orderDetailDTOS.add(convertToOrderDetaiDTO(orderDetail));
         }
+        return new OrderResponse(serialNumber, totalPrice, OrderStatus.CONFIRM, LocalDateTime.now(), orderDetailDTOS);
 
-
-        OrderResponse orderResponse = new OrderResponse(serialNumber, orderDetailDTOS, totalPrice, OrderStatus.CONFIRM, LocalDateTime.now(), now);
-
-        return orderResponse;
     }
-    private OrderDetailDTO convertToOrderDetaiDTO(OrderDetail orderDetail){
+
+    public OrderDetailDTO convertToOrderDetaiDTO(OrderDetail orderDetail) {
         return OrderDetailDTO.builder()
                 .productName(orderDetail.getName())
                 .price(orderDetail.getUnitPrice())
                 .quantity(orderDetail.getOrderQuantity())
-                .totalPrice(orderDetail.getUnitPrice()*orderDetail.getOrderQuantity())
+                .totalPrice(orderDetail.getUnitPrice() * orderDetail.getOrderQuantity())
                 .build();
     }
 

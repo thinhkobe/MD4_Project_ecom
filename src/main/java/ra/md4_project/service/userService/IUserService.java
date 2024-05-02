@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ra.md4_project.exception.DataExist;
 import ra.md4_project.exception.DataNotFound;
+import ra.md4_project.exception.Locked;
 import ra.md4_project.exception.RequestError;
 import ra.md4_project.model.dto.request.ChangePassWordDOT;
 import ra.md4_project.model.dto.request.FormLogin;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public interface IUserService {
     boolean register(FormRegister formRegister);
-    JWTResponese login(FormLogin formLogin) throws DataNotFound;
+    JWTResponese login(FormLogin formLogin) throws DataNotFound, Locked;
 
     Page<Users> findAll(Pageable pageable);
     Users findById(Long id) throws DataNotFound;

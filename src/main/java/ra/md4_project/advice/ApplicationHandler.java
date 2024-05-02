@@ -7,10 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ra.md4_project.exception.CategoryNotEmpty;
-import ra.md4_project.exception.DataExist;
-import ra.md4_project.exception.DataNotFound;
-import ra.md4_project.exception.RequestError;
+import ra.md4_project.exception.*;
 import ra.md4_project.model.dto.response.ResponeError;
 import ra.md4_project.model.dto.respornWapper.ApiError;
 
@@ -47,6 +44,11 @@ public class ApplicationHandler {
     public ResponseEntity<?> RequestError(RequestError e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(HttpStatus.BAD_REQUEST, e.getMessage()));
+    }
+  @ExceptionHandler(Locked.class)
+    public ResponseEntity<?> Locked(Locked e) {
+        return ResponseEntity.status(HttpStatus.LOCKED)
+                .body(new ApiError(HttpStatus.LOCKED, e.getMessage()));
     }
 
     @ExceptionHandler(DataNotFound.class)

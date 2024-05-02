@@ -15,12 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderResponse {
-    private String orderId;
-    private List<OrderDetailDTO> orderDetails;
+    private String serialNumber;
     private double totalPrice;
     private OrderStatus orderStatus;
-    private LocalDateTime orderPlacedAt;
-    private LocalDateTime estimatedDeliveryTime;
-
-
+    private LocalDateTime createdAt;
+    private List<OrderDetailDTO> orderDetails;
 }
